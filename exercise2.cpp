@@ -30,7 +30,7 @@ int main(){
         if(digitsRequired <= availableDigits){
             availableDigits -= digitsRequired;
             num = num + multiplier;
-            // Cycle changed above value one, precedingOnes should be decremented
+            // Current cycle completed, precedingOnes should be decremented
             precedingOnes--;
             // Phase 2: Check how many NEW cycles can be completed
             /* Since the equation
@@ -42,7 +42,6 @@ int main(){
             count = availableDigits / digitsRequired;
             availableDigits -= count * digitsRequired;
             num = num + count * multiplier;
-
         }
         // Phase 3: Calculate inner cycle
         cycle = -1;
@@ -58,6 +57,10 @@ int main(){
         }
         if(cycle == -1){    // No inner cycle calculated
             if(precedingOnes == 0){
+                // If precedingOnes = 0, availableDigits must be zero and
+                // num must be of the form xyz, where x is any number of any digits,
+                // y is a digit > 0, and x is the digit 9. A "free" increment can thus
+                // be performed, before quitting.
                 num++;
                 break;
             }
