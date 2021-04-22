@@ -71,6 +71,11 @@ num     0   1   2   3   4   5   6   7   8   9
 #define MAX_INDEX 59
 int digitCount = 1;
 
+/**
+ * Increment the number stored in the array digits
+ * @param digits - The array of digits comprising the number
+ * @param maxIndex - The maximum index of the digits array
+ */
 void incrementNum(int digits[], int maxIndex){
     digits[maxIndex]++;
     if(digits[maxIndex] == 10){

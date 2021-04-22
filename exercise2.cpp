@@ -1,137 +1,82 @@
 #include <stdio.h>
 
-/*
-Esimerkki 1
-
-numeroita: 5
-Vastaus: 12
-
-Esimerkki 2
-
-numeroita: 1000
-Vastaus: 1499
-*/
-
-/*
-
-0-9: 1
-<precedingDigits>x
-x0-x9
-
-digitCount  start   end
-1           2       2
-2           1       2
-3           0       2
-
-start = 3 - digitCount
-end = 2
-
-num     0   1   2   3   4   5   6   7   8   9
-1           1
-2           1   1
-3           1   1   1
-4           1   1   1   1
-5           1   1   1   1   1
-6           1   1   1   1   1   1
-7           1   1   1   1   1   1   1
-8           1   1   1   1   1   1   1   1
-9           1   1   1   1   1   1   1   1   1
-10      1   2   1   1   1   1   1   1   1   1
-11      1   4   1   1   1   1   1   1   1   1
-12      1   5   2   1   1   1   1   1   1   1
-13      1   6   2   2   1   1   1   1   1   1
-14      1   7   2   2   2   1   1   1   1   1
-15      1   8   2   2   2   2   1   1   1   1
-16      1   9   2   2   2   2   2   1   1   1
-17      1   10   2   2   2   2   2   2   1   1
-18      1   11  2   2   2   2   2   2   2   1
-19      1   12  2   2   2   2   2   2   2   2
-20      2   12  3   2   2   2   2   2   2   2
-
-10      1   1   0   0   0   0   0   0   0   0
-11      0   2   0   0   0   0   0   0   0   0
-12      0   1   1   0   0   0   0   0   0   0
-13      0   1   0   1   0   0   0   0   0   0
-14      0   1   0   0   1   0   0   0   0   0
-15      0   1   0   0   0   1   0   0   0   0
-16      0   1   0   0   0   0   1   0   0   0
-17      0   1   0   0   0   0   0   1   0   0
-18      0   1   0   0   0   0   0   0   1   0
-19      0   1   0   0   0   0   0   0   0   1
-
-9*1 + 1*2 = 9 + 2 = 11
-
-20      1   0  1   0   0   0   0   0   0   0
-
-<d><0-9> will take 11 of digits d
-<d><0-9><0-9>
-*/
-
-#define MAX_LENGTH 60
-#define MAX_INDEX 59
-int digitCount = 1;
-
-void incrementNum(int digits[], int maxIndex){
-    digits[maxIndex]++;
-    if(digits[maxIndex] == 10){
-        digits[maxIndex] = 0;
-        if(digits[maxIndex-1] == -1){
-            digits[maxIndex-1] = 0;
-            digitCount++;
-        }
-        incrementNum(digits, maxIndex-1);
-    }
-}
-
 int main(){
-    int inputNum;
-    printf("Give a number: ");
-    scanf("%d", &inputNum);
-    int digits[MAX_LENGTH];
-    // Initialize digits array
-    for(int i = 0; i < MAX_LENGTH; i++){
-        digits[i] = -1;
+    int availableDigits;
+    printf("Give number of digits: ");
+    scanf("%d", &availableDigits);
+    if(availableDigits == 0) printf("Invalid input specified. No number may be printed without any digits\n");
+    if(availableDigits < 0) printf("Invalid input specified. No number may be printed with a negative number of digits\n");
+    // Identify cycle
+    // Digits required d for cycle 10^x = (1 + (x-1)) * 10^(x-1)
+    // For example: d for cycle 1000 (x = 3) = (1 + (3-1)) + 10^(3-1) = 300
+    int cycle = -1;
+    int m=1, c=1;
+    int d, digitsRequired, count;
+    while(m*c <= availableDigits){
+        cycle = c;
+        d = m * c;
+        m *= 10;
+        c++;
     }
-    digits[MAX_INDEX] = 1;
-    // Initialize digitsRequired array
-    int digitsRequired[10] = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-    //int digitsAvailable[10];
-    /*for(int i = 0; i < 10; i++){
-        digitsAvailable[i] = inputNum;
-    }*/
-    int digitsUsed = 1;
-    while(digitsUsed < inputNum){
-        incrementNum(digits, MAX_INDEX);
-        /*for(int j = MAX_LENGTH - digitCount; j < MAX_LENGTH; j++){
-            printf("%d", digits[j]);
+    int maxCycle = cycle;
+    int cycleMultiplier = m/10;
+    int multiplier = m;
+    int num = multiplier - 1;
+    int precedingOnes = 1;
+    availableDigits -= d;
+    while(availableDigits > 0){
+        // Phase 1: Check if cycle can be completed
+        digitsRequired = cycle * cycleMultiplier + multiplier * precedingOnes;
+        if(digitsRequired <= availableDigits){
+            availableDigits -= digitsRequired;
+            num = num + multiplier;
+            // Cycle changed above value one, precedingOnes should be decremented
+            precedingOnes--;
+            // Phase 2: Check how many NEW cycles can be completed
+            /* Since the equation
+            cycle * cycleMultiplier + multiplier * precedingOnes
+            is the same as the one used in phase 1, and only the parameter precedingOnes
+            has changed, answers is multiplier * 1 smaller than the one in phase 1.
+            */
+            digitsRequired -= multiplier;
+            count = availableDigits / digitsRequired;
+            availableDigits -= count * digitsRequired;
+            num = num + count * multiplier;
+
         }
-        printf("\n");*/
-        for(int j = 0; j < digitCount; j++){
-            int digit = digits[MAX_INDEX-j];
-            if(digit == 1) digitsUsed++;
-            //digitsRequired[digit]++;
-            //if(digitsRequired[digit] > digitsUsed) digitsUsed = digitsRequired[digit];
+        // Phase 3: Calculate inner cycle
+        cycle = -1;
+        m=1;
+        c=1;
+        multiplier = 10;
+        while(c < maxCycle && m*c + multiplier * precedingOnes <= availableDigits){
+            cycle = c;
+            d = m * c + multiplier * precedingOnes;
+            m *= 10;
+            multiplier *= 10;
+            c++;
         }
-        //digitsUsed = digitsRequired[1];
-    }
-    /*int d = -1;
-    int highest = 0;
-    for(int i = 0; i < 10; i++){
-        if(digitsRequired[i] > highest){
-            d = i;
-            highest = digitsRequired[i];
+        if(cycle == -1){    // No inner cycle calculated
+            if(precedingOnes == 0){
+                num++;
+                break;
+            }
+            count = availableDigits / precedingOnes;
+            if(count > 1){
+                availableDigits--;
+                count = availableDigits / precedingOnes;
+            }
+            availableDigits -= count * precedingOnes;
+            num += count;
+            break;
         }
-        printf("digitsRequired[%d]: %d\n", i, digitsRequired[i]);
+        maxCycle = cycle;
+        precedingOnes++;
+        availableDigits -= d;
+        cycleMultiplier = m / 10;
+        multiplier = m;
+        num = num + multiplier;
     }
-    printf("\n");
-    printf("Digit which requires the most digits: %d\n", d);*/
-    /*for(int j = 0; j < digitCount; j++){
-        digitsRequired[digits[MAX_INDEX-j]]++;
-    }*/
-    printf("Last number possible to be printed: ");
-    for(int j = MAX_LENGTH - digitCount; j < MAX_LENGTH; j++){
-        printf("%d", digits[j]);
-    }
-    printf("\n");
+    printf("Last number possible to be printed: %d\n", num);
     return 0;
 }

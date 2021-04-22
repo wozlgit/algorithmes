@@ -1,0 +1,55 @@
+/*
+Example: Digit Count: 3000
+Phase 1: Calculate outer cycle:
+10^1 = (1 + (1-1)) * 10^(1-1) = (1 + 0) * 10^0 = 1 * 1 = 1
+10^2 = (1 + (2-1)) * 10^(2-1) = (1 + 1) * 10^1 = 2 * 10 = 20
+10^3 = (1 + (3-1)) * 10^(3-1) = (1 + 2) * 10^2 = 3 * 100 = 300  x
+10^4 = (1 + (4-1)) * 10^(4-1) = (1 + 3) * 10^3 = 4 * 1000 = 4000
+Outer Cycle: 1000
+Digits Required: 300
+Digits Left: 2700
+Phase 2: Check whether outer cycle can be completed:
+10^3 = (11 + (3-1)) * 10^(3-1) = (11 + 2) * 10^2 = 13 * 100 = 1300
+Digits Available: 2700
+Digits Required: 1300
+CanBeCompleted: Yes
+Digits Left: 1400
+If can be completed, jump to phase 4.
+
+Phase 3: Calculate inner cycle
+Phase 4: Check how many NEW outer cycles can be completed:
+10^3 = (1 + (3-1)) * 10^(3-1) = (1 + 2) * 10^2 = 3 * 100 = 300
+
+Digits Available: 1400
+Digits Required To Complete one NEW outer cycle: 300
+canBeCompletedCount: 1400 / 300 = 4
+Digits Left: 1400 - 4 * 300 = 1400 - 1200 = 200
+Outer Cycle: 2000 + 4*1000 = 2000 + 4000 = 6000
+Phase 5: Calculate inner cycle
+10^2 = (1 + (2-1)) * 10^(2-1) = (1 + 1) * 10^1 = 2 * 10 = 20    x
+10^1 = (1 + (1-1)) * 10^(1-1) = (1 + 0) * 10^0 = 1 * 1 = 1
+Digits Available: 200
+Digits Required: 20
+canBeStarted: Yes
+DigitsLeft 200 - 20 = 180
+Inner Cycle: 100
+Phase 6: Check whether inner cycle can be completed:
+10^2 = (11 + (2-1)) * 10^(2-1) = (11 + 1) * 10^1 = 12 * 10 = 120
+Digits Available: 180
+Digits Required: 120
+canBeCompleted: Yes
+DigitsLeft 180 - 120 = 60
+Inner Cycle: 200
+Phase 7: Check how many NEW inner cycles can be completed:
+10^2 = (1 + (2-1)) * 10^(2-1) = (1 + 1) * 10^1 = 2 * 10 = 20
+Digits Available: 60
+Digits Required To Complete one new inner cycle: 20
+canBeCompletedCount: 60 / 20 = 3
+DigitsRequired: 3 * 20 = 60
+Inner Cycle: 200 + 3 * 100 = 200 + 300 = 500
+DigitsLeft: 60 - 60 = 0
+DigitsLeft = 0, result:
+Outer Cycle: 6000
+Inner Cycle: 500
+Number: 6500
+*/
